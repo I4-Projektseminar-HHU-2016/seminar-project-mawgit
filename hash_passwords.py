@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# coding: utf8
+
 """
 
     Securely hash and check passwords using PBKDF2.
@@ -25,7 +25,7 @@ from itertools import izip
 # pbkdf2 is from https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin
 
-# Needed for generate_password
+# Required for generate_password
 import string
 import random
 
@@ -41,7 +41,7 @@ COST_FACTOR = 10000
 
 
 def make_hash(password):
-    """Generate a random salt and return a new hash for the password."""
+    """ Generate a random salt and return a new hash for the password. """
     if isinstance(password, unicode):
         password = password.encode('utf-8')
     salt = b64encode(urandom(SALT_LENGTH))
@@ -54,7 +54,7 @@ def make_hash(password):
 
 
 def check_hash(password, hash_):
-    """Check a password against an existing hash."""
+    """ Check a password against an existing hash. """
     if isinstance(password, unicode):
         password = password.encode('utf-8')
     algorithm, hash_function, cost_factor, salt, hash_a = hash_.split('$')
@@ -71,7 +71,7 @@ def check_hash(password, hash_):
     return diff == 0
 
 def generate_password(length = 8):
-    """ Author: Tobias Siebenlist """
+    """ This is from a seminar of Tobias Siebenlist """
     chars = string.letters + string.digits
     return ''.join(random.choice(chars) for _ in xrange(length))
 
