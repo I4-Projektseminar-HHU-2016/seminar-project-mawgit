@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Parkautomaten Leitsystem{% endblock %}
+
+
+
+{% block content %}
+<h1>Login</h1>
+<p>
+
+<br />
+<form method="POST" action="{{ url_for('login', next=request.args.get('next')) }}">
+    {{ form.hidden_tag() }}
+    <div class="form-group{% if form.username.errors %} error{% endif %}">
+        <label class="control-label" for="username">Username</label>
+        {{ form.username(size=20, class="form-control") }}
+    </div>
+    {% if form.username.errors %}
+    {% for error in form.username.errors %}
+    <span class=text-error>{{ error }}</span>
+    {% endfor %}
+    {% endif %}
+    <div class="form-group{% if form.password.errors %} error{% endif %}">
+        <label class="control-label" for="password">Password</label>
+        {{ form.password(size=20, class="form-control") }}
+    </div>
+    {% if form.password.errors %}
+    {% for error in form.password.errors %}
+    <span class=text-error>{{ error }}</span>
+    {% endfor %}
+    {% endif %}
+    <div class="form-group{% if form.username.errors %} error{% endif %}">
+        <label class="control-label" for="remember">Remember me</label>
+        {{ form.remember(size=20) }}
+    </div>
+    <input type="submit" value="Go" class="btn btn-primary">
+</form>
+</p>
+{% endblock %}
