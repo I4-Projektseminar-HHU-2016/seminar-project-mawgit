@@ -17,7 +17,7 @@ def init_db():
     # you will have to import them first before calling init_db()
     import models
     Base.metadata.create_all(bind=engine)
-    admin_password = make_hash('passwort')
+    admin_password = make_hash('default')
     admin_user = models.User(username='admin', password = admin_password, active=True)
     db_session.add(admin_user)
     db_session.commit()
