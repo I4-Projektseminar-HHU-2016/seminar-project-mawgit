@@ -60,8 +60,7 @@ def logout():
 @app.route("/index")
 def func1():
     return render_template('/index.html')
-    
-"""
+
 @app.route("/heatmap")
 def func2():
     return render_template("/heatmaptestAI.html")
@@ -71,5 +70,5 @@ def func3():
     return render_template("/staticmaptest.html")
 if __name__ == "__main__":
     app.run()
-"""
+
 
