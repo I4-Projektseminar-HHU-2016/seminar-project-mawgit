@@ -20,10 +20,11 @@
 import hashlib
 from os import urandom
 from base64 import b64encode, b64decode
-#from itertools import izip
+#from itertools import izip   #for Python2.7
 try:
     from itertools import izip
-except ImportError:  #If python3.x change izip to zip and save in variable izip
+except ImportError:
+    #If using Python3.x, change izip to zip and save it in variable izip
     izip = zip
 
 # pbkdf2 is from https://github.com/mitsuhiko/python-pbkdf2
@@ -46,7 +47,8 @@ COST_FACTOR = 10000
 
 def make_hash(password):
     """ Generate a random salt and return a new hash for the password. """
-    if isinstance(password, unicode):
+    #if isinstance(password, unicode):  #for Python2.7
+    if isinstance(password, str):  #for Python3.5
         password = password.encode('utf-8')
     salt = b64encode(urandom(SALT_LENGTH))
     return 'PBKDF2${}${}${}${}'.format(
@@ -59,7 +61,8 @@ def make_hash(password):
 
 def check_hash(password, hash_):
     """ Check a password against an existing hash. """
-    if isinstance(password, unicode):
+    #if isinstance(password, unicode):  #for Python2.7
+    if isinstance(password, str):  #for Python3.5
         password = password.encode('utf-8')
     algorithm, hash_function, cost_factor, salt, hash_a = hash_.split('$')
     assert algorithm == 'PBKDF2'
@@ -75,7 +78,14 @@ def check_hash(password, hash_):
     return diff == 0
 
 def generate_password(length = 8):
-    """ This is from a seminar of Tobias Siebenlist """
+    """ This function (for Python2.7 only) is from a seminar of Tobias Siebenlist """
+    #I made it Python3.x compatible.
+    try:
+        xrange 
+    except NameError: 
+        # If Python3.x then change xrange to range
+        xrange = range
+
     chars = string.letters + string.digits
     return ''.join(random.choice(chars) for _ in xrange(length))
 

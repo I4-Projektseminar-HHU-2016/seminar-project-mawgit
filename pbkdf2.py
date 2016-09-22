@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# pbkdf2 is from https://github.com/mitsuhiko/python-pbkdf2
+# https://github.com/mitsuhiko/python-pbkdf2/blob/master/pbkdf2.py
+# with some changes to make it compatible with Python3.x
+
 """
     pbkdf2
     ~~~~~~
@@ -46,10 +51,11 @@ import hashlib
 from struct import Struct
 from operator import xor
 from itertools import starmap
-#from itertools import izip
+#from itertools import izip   #for Python2.7
 try:
     from itertools import izip
-except ImportError:  #If python3.x change izip to zip and save in variable izip
+except ImportError:
+    #If using Python3.x, change izip to zip and save it in variable izip
     izip = zip
 
 
@@ -73,6 +79,13 @@ def pbkdf2_bin(data, salt, iterations=1000, keylen=24, hashfunc=None):
         h = mac.copy()
         h.update(x)
         return map(ord, h.digest())
+
+    try:
+        xrange 
+    except NameError: 
+        # If Python3.x then change xrange to range
+        xrange = range
+
     buf = []
     for block in xrange(1, -(-keylen // mac.digest_size) + 1):
         rv = u = _pseudorandom(salt + _pack_int(block))
