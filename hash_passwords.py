@@ -20,7 +20,11 @@
 import hashlib
 from os import urandom
 from base64 import b64encode, b64decode
-from itertools import izip
+#from itertools import izip
+try:
+    from itertools import izip
+except ImportError:  #If python3.x change izip to zip and save in variable izip
+    izip = zip
 
 # pbkdf2 is from https://github.com/mitsuhiko/python-pbkdf2
 from pbkdf2 import pbkdf2_bin

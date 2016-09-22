@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, url_for, redirect, flash, request, session
-import config
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from models import User
 from database import db_session
 from forms import LoginForm, EditPasswordForm, NewUserForm, EditUserForm, EditUserPasswordForm
 from hash_passwords import make_hash
 from sqlalchemy import asc
 from sqlalchemy.sql import text,bindparam
+from models import User
+import config
 
 
 app = Flask(__name__)
@@ -16,18 +16,18 @@ app.debug = True
 app.config.from_object(config)
 
 
-# Integration von Flask-Login
+# Integration of Flask-Login
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route("/")
 @login_required
@@ -68,6 +68,8 @@ def func2():
 @app.route("/staticmap")
 def func3():
     return render_template("/staticmaptest.html")
+
+
 if __name__ == "__main__":
     app.run()
 

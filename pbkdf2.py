@@ -45,7 +45,12 @@ import hmac
 import hashlib
 from struct import Struct
 from operator import xor
-from itertools import izip, starmap
+from itertools import starmap
+#from itertools import izip
+try:
+    from itertools import izip
+except ImportError:  #If python3.x change izip to zip and save in variable izip
+    izip = zip
 
 
 _pack_int = Struct('>I').pack
@@ -83,14 +88,14 @@ def test():
     def check(data, salt, iterations, keylen, expected):
         rv = pbkdf2_hex(data, salt, iterations, keylen)
         if rv != expected:
-            print 'Test failed:'
-            print '  Expected:   %s' % expected
-            print '  Got:        %s' % rv
-            print '  Parameters:'
-            print '    data=%s' % data
-            print '    salt=%s' % salt
-            print '    iterations=%d' % iterations
-            print
+            print('Test failed:')
+            print('  Expected:   %s' % expected)
+            print('  Got:        %s' % rv)
+            print('  Parameters:')
+            print('    data=%s' % data)
+            print('    salt=%s' % salt)
+            print('    iterations=%d' % iterations)
+            print()
             failed.append(1)
 
     # From RFC 6070

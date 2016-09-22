@@ -4,4 +4,5 @@ SECRET_KEY = '\xca%6\xa4}\xb2K\xd4L\x94{\x08\xf5 \x06\xeaD\x89\xd2\xc9\x10\xcb\x
 
 # Angabe von Informationen zur Datenbank
 DB_URI = 'sqlite:///parkautomaten.db'
+#DB_URI = 'sqlite:////tmp/test.db'
 
