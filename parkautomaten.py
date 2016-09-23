@@ -21,18 +21,22 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 @app.route("/")
 @login_required
 def index():
     return render_template('index.html')
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -50,24 +54,36 @@ def login():
             flash('Wrong username and / or password')
     return render_template('login.html', form=form)
 
+
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     flash('Logged out successfully')
     return redirect(url_for('index'))
-    
+
+
 @app.route("/index")
 def func1():
     return render_template('/index.html')
 
+
+@app.route("/automap")
+def func2():
+    #return render_template("/maps/park_staticmap.html")
+    return app.send_file('/maps/park_staticmap.html')
+
+
+@app.route("/busmap")
+def func3():
+    #return render_template("/maps/bus_staticmap.html")
+    return app.send_file('/maps/bus_staticmap.html')
+
+
 @app.route("/heatmap")
 def func2():
-    return render_template("/heatmaptestAI.html")
-
-@app.route("/staticmap")
-def func3():
-    return render_template("/staticmaptest.html")
+    #return render_template("/maps/heatmaptestAI.html")
+    return app.send_file('/maps/heatmaptestAI.html')
 
 
 if __name__ == "__main__":
