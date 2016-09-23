@@ -41,8 +41,15 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
+
+    # on POST check if the submitted form is valid
     if form.validate_on_submit():
+
+        # get user from database
         user = User.query.filter_by(username=form.username.data).first()
+
+        #check if the user exists and if he/she provided correct password
+        #if user is not None and user.valid_password == form.password.data:
         if user is not None and user.valid_password(form.password.data):
             if login_user(user, remember=form.remember.data):
                 session.permanent = not form.remember.data
@@ -52,6 +59,8 @@ def login():
                 flash('This account is disabled')
         else:
             flash('Wrong username and / or password')
+
+    # on GET, just render the template with login form
     return render_template('login.html', form=form)
 
 
@@ -70,23 +79,23 @@ def func1():
 
 @app.route("/automap")
 def func2():
-    #return render_template('/maps/park_staticmap.html')
-    #return app.send_static_file('/maps/park_staticmap.html')
-    return app.send_file('/maps/park_staticmap.html')
+    return render_template('/maps/park_staticmap.html')
+    #return app.send_static_file('/maps/park_staticmap.html')  #URL Not Found?
+    #return app.send_file('/maps/park_staticmap.html')  #AttributeError: 'Flask' object has no attribute 'send_file'
 
 
 @app.route("/busmap")
 def func3():
-    #return render_template('/maps/bus_staticmap.html')
+    return render_template('/maps/bus_staticmap.html')
     #return app.send_static_file('/maps/bus_staticmap.html')
-    return app.send_file('/maps/bus_staticmap.html')
+    #return app.send_file('/maps/bus_staticmap.html')
 
 
 @app.route("/heatmap")
 def func4():
-    #return render_template('/maps/heatmaptestAI.html')
+    return render_template('/maps/heatmaptestAI.html')
     #return app.send_static_file('/maps/heatmaptestAI.html')
-    return app.send_file('/maps/heatmaptestAI.html')
+    #return app.send_file('/maps/heatmaptestAI.html')
 
 
 if __name__ == "__main__":

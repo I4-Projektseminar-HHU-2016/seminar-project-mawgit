@@ -19,7 +19,7 @@ def init_db():
     import models
     # Initialize database schema (create tables)
     Base.metadata.create_all(bind=engine)
-    admin_password = make_hash('default1')
+    admin_password = make_hash('dedefault')
     admin_user = models.User(username='admin', password = admin_password, active=True)
     db_session.add(admin_user)
     db_session.commit()
