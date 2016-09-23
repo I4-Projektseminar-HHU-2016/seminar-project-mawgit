@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+  <title>Busparkplätze Map für Köln</title> 
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script type="text/javascript" src="./busparkplaetze.json"></script>
+</head>
+
+<body>
+
+<!--
+TEST for Google MAPS
+###### = insert Google maps key in the src
+<iframe
+  width="600"
+  height="450"
+  frameborder="0" style="border:0"
+  src="https://www.google.com/maps/embed/v1/place?key=######&q=1+City+Hall+Square,+Boston,+MA+02201" allowfullscreen>
+</iframe>
+-->
+
+
+ <div id="map" style="width: 800px; height: 600px;"></div>
+
+  <script type="text/javascript">
+
+  //content from the "busparkplaetze.json", since "require" and "readFile" didn't work in JS :-(
+	var data = '[["Busparkplatz", "Konrad-Adenauer-Ufer", "werktags: von 9  bis 18 Uhr (1 Euro f\u00fcr 30 Minuten, maximal 24 Stunden), sonn- und feiertags:  (geb\u00fchrenfrei)", 50.951906855702404, 6.968852262415748], ["Busparkplatz", "Konrad-Adenauer-Ufer", "werktags: von 9  bis 18 Uhr (1 Euro f\u00fcr 30 Minuten, maximal 24 Stunden), sonn- und feiertags:  (geb\u00fchrenfrei)", 50.951701403508444, 6.968630388984245], ["Busparkplatz", "Konrad-Adenauer-Ufer", "werktags: von 9  bis 18 Uhr (1 Euro f\u00fcr 30 Minuten, maximal 24 Stunden), sonn- und feiertags:  (geb\u00fchrenfrei)", 50.95177886908609, 6.968432572950652], ["Busparkplatz", "Konrad-Adenauer-Ufer", "werktags: von 9  bis 18 Uhr (1 Euro f\u00fcr 30 Minuten, maximal 24 Stunden), sonn- und feiertags:  (geb\u00fchrenfrei)", 50.951947949328684, 6.96859883664309], ["Busparkplatz", "Konrad-Adenauer-Ufer", "werktags: von 9  bis 18 Uhr (1 Euro f\u00fcr 30 Minuten, maximal 24 Stunden), sonn- und feiertags:  (geb\u00fchrenfrei)", 50.951982636626305, 6.968659793218749], ["Busparkplatz", "Konrad-Adenauer-Ufer", "werktags: von 9  bis 18 Uhr (1 Euro f\u00fcr 30 Minuten, maximal 24 Stunden), sonn- und feiertags:  (geb\u00fchrenfrei)", 50.951906855702404, 6.968852262415748], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.9688683514985, 6.9892953798734565], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96881624593228, 6.989007851651584], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96882533181959, 6.989016755868737], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.968909273946075, 6.9889017942399505], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96898424053788, 6.988719180168549], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96897969870306, 6.9886822649513345], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.969259945523056, 6.988626859304968], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96926838953379, 6.98866360614414], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96939014946799, 6.9886348762348725], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.969463933311076, 6.989035192368193], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96939228277875, 6.989054119280544], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96946086375307, 6.989181050295533], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96898328347659, 6.9893439414758705], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.96889941157611, 6.989236228363031], ["Busparkplatz", "Kuhweg", "geb\u00fchrenfrei", 50.9688683514985, 6.9892953798734565], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.9375448335314, 6.986720599343437], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.93798788938617, 6.98655410510064], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.93800320568544, 6.986731819993006], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.938013290582575, 6.98689037279102], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.938034905608674, 6.987149248768106], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.93808187101739, 6.98745744156562], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.93826572223763, 6.988457725479339], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.93791596718202, 6.988635686793999], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.9377953526461, 6.987892488897902], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.93774300271375, 6.987840460729022], ["Busparkplatz", "P5 - Gummersbacher Stra\u00dfe 4", "1 Euro f\u00fcr 30 Minuten, 8 Euro f\u00fcr 24 Stunden", 50.9375448335314, 6.986720599343437], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.945827143426875, 6.989094878271082], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94597212799753, 6.989357761041009], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.946132624090495, 6.989662882112312], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.946111067007855, 6.9896989180488385], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.9464932318548, 6.9904274478633255], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.946613321533086, 6.9906758087004395], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.946614864461324, 6.990765457285697], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.946617346414705, 6.990909674344187], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.946611300575015, 6.990987947641484], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94659739871922, 6.991039255189291], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94621360286024, 6.991504372857968], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94587994401337, 6.991159902888974], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.945812483824, 6.990819561676412], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94578851891934, 6.990286217506434], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94578232475571, 6.989783311890377], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.94580303349397, 6.989411864630183], ["Busparkplatz", "P22 - Messeparkplatz, Pf\u00e4lzischer Ring", "geb\u00fchrenfrei", 50.945827143426875, 6.989094878271082], ["Bushaltepunkt", "Kom\u00f6dienstra\u00dfe", "geb\u00fchrenfrei", 50.94178887343765, 6.955602631011759], ["Bushaltepunkt", "Kom\u00f6dienstra\u00dfe", "geb\u00fchrenfrei", 50.94174512830763, 6.955667988109547], ["Bushaltepunkt", "Kom\u00f6dienstra\u00dfe", "geb\u00fchrenfrei", 50.94163903941225, 6.9543708847392045], ["Bushaltepunkt", "Kom\u00f6dienstra\u00dfe", "geb\u00fchrenfrei", 50.941684027896976, 6.9543765227757515], ["Bushaltepunkt", "Kom\u00f6dienstra\u00dfe", "geb\u00fchrenfrei", 50.94178887343765, 6.955602631011759], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88188754651597, 7.116399870151556], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88156968635318, 7.117089259161365], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.881219682609995, 7.117875741838443], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88110946211148, 7.118057566622708], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.880972248980875, 7.118075392980724], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88095200452024, 7.117900698778735], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.881348897581084, 7.117015935303841], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88167040786786, 7.116310501997464], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88170519820116, 7.1162382473196635], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88171839423319, 7.11621733123075], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88174358740057, 7.1162040218908], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88176158201496, 7.116190711465042], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88178557563587, 7.11618120368159], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88180716910542, 7.116175500410191], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.881834761794906, 7.116177401317883], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.881879148897326, 7.116217331122258], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88188754668519, 7.11625345818158], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.881894744371884, 7.116283881588132], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88189714426452, 7.116320008910921], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88189474447291, 7.1163751513010025], ["Bushaltepunkt", "Flughafen K\u00f6ln/Bonn", "geb\u00fchrenfrei", 50.88188754651597, 7.116399870151556]]'
+
+    //var data = require('./busparkplaetze.json');
+    //var data = readFile('./busparkplaetze.json');
+
+	  var locations = JSON.parse(data);
+
+    // location tests
+    //
+    //var locations = [
+    //  ['Bondi Beach', -33.890542, 151.274856],
+    //  ['Coogee Beach', -33.923036, 151.259052],
+    //  ['Cronulla Beach', -34.028249, 151.157507],
+    //  ['Manly Beach', -33.80010128657071, 151.28747820854187],
+    //  ['Maroubra Beach', -33.950198, 151.259302]
+    //];
+	
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom:11,
+      center: new google.maps.LatLng(50.93, 6.95),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][3], locations[i][4]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          // without bold words
+          //infowindow.setContent("<p>NUTZUNGSART: "+locations[i][0]+"<br />"+"BEZEICHNUNG(ORT): "+locations[i][1]+"<br />"+"GEBÜHREN "+locations[i][2]+"</p>");
+          //
+          // with bold words
+          infowindow.setContent("<p><b>NUTZUNGSART:</b> "+locations[i][0]+"<br />"+"<b>BEZEICHNUNG(ORT):</b> "+locations[i][1]+"<br />"+"<b>GEBÜHREN</b> "+locations[i][2]+"</p>");
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+    
+  </script>
+
+</body>
+
+</html>
