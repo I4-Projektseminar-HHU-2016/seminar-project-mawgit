@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+# Literaturverzeichnis (APA-Stil): 
+# Sapin, Simon (2011): „Hashing passwords the Right Way − Exyr.org“. Exyr.org. Abgerufen am 26.08.2016 von http://exyr.org/2011/hashing-passwords/. (Zeile 8-27, 36-56, 58-70, 72-74, 77-89, 97-98)
+
+# Dazu habe ich ein paar Veränderungen am Code vorgenommen. 
+
 """
 
     Securely hash and check passwords using PBKDF2.

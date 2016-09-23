@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Literaturverzeichnis (APA-Stil): 
+# Ronacher, Armin (2016): „mitsuhiko/python-pbkdf2“. GitHub. Abgerufen am 18.08.2016 von https://github.com/mitsuhiko/python-pbkdf2. (Zeile 11-57, 74, 90-108, 120-131, 138-189)
+
 # pbkdf2 is from https://github.com/mitsuhiko/python-pbkdf2
 # https://github.com/mitsuhiko/python-pbkdf2/blob/master/pbkdf2.py
-# with some changes to make it compatible with Python3.x
+# with some changes of me to make it compatible with Python3.x
 
 """
     pbkdf2
@@ -134,7 +137,7 @@ def pbkdf2_bin(data, salt, iterations=1000, keylen=24, hashfunc=None):
 
 def test():
     failed = []
-    
+
     def check(data, salt, iterations, keylen, expected):
         rv = pbkdf2_hex(data, salt, iterations, keylen)
         if rv != expected:
