@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+    <title>Heatmap Parkscheinautomaten</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      map-canvas {
+        height: 600px;
+        width: 800px;
+        margin: 0;
+        padding: 0;
+      }
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+
+      /*
+      Provide the following styles for both ID and class,
+      where ID represents an actual existing "panel" with
+      JS bound to its name, and the class is just non-map
+      content that may already have a different ID with
+      JS bound to its name.
+      */
+
+      #panel, .panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #panel select, #panel input, .panel select, .panel input {
+        font-size: 15px;
+      }
+
+      #panel select, .panel select {
+        width: 100%;
+      }
+
+      #panel i, .panel i {
+        font-size: 12px;
+      }
+
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=visualization"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="./data/parkschein.json"></script>
+    <script>
+    
+    var map, pointarray, heatmap;
+
+    // Adding Data Points
+    // content from the "parkschein.json", since "require" and "readFile" didn't work in JS :-(
+    var data = '[["Deutz I", "Deutzer Freiheit 53", "Siegburger Str.", "D\u00fcppelstr.", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 21:00", "2", "500015", "10", "50.93686078", "6.97249396"], ["City/Martinsviertel", "Offenbachplatz 3", "", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "8", "50.93795", "6.95324"], ["Chorweiler", "Turkuplatz", "Athener Ring", "Willi-Suth-Allee", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500022", "33", "51.01951411", "6.89767251"], ["Nippes", "Neusser Str. 453", "Bergstra\u00dfe", "Mauenheimer G\u00fcrtel", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "4", "500003", "14", "50.97248481", "6.95098355"], ["Chorweiler", "Liverpooler Platz A", "Platzfl\u00e4che", "", "0,50 \u20ac", "Nein", "Mo-Mi+Fr 09:00 - 20:00; Do + Sa 15:00 - 20:00", "4", "500028", "69", "51.021261", "6.898092"], ["Georgsviertel", "Severinstr. 218", "Waidmarkt", "Kl. Spitzengasse", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "4", "500001", "20", "50.9299707", "6.9570522"], ["Griechenmarktviertel", "Jahnstr. 9", "Mauritiuswall", "Humboldtstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "51", "50.9319231", "6.94235454"], ["M\u00fclheim", "Jan-Wellem-Str. 2", "Platz", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "4", "500003", "65", "50.96031625", "7.00485467"], ["S\u00fcdliche Neustadt II", "Bonner Wall", "Bonner Stra\u00dfe", "Ohmstra\u00dfe", "0,50 \u20ac", "JA", "Mo-Sa 09:00 - 18:00", "9", "500100", "0", "50.91632612", "6.96049601"], ["Kalk", "Vorsterstr. 68", "Platz", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "2", "500008", "82", "50.93850857", "7.00195554"], ["M\u00fclheim", "Buchheimer Str. 56 Platz", "", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "2", "500008", "33", "50.962538", "7.003347"], ["Kunibertsviertel", "Kunibertsklostergasse 16", "Kunibertsklostergasse", "Dagobertstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "11", "50.947091", "6.962663"], ["Rodenkirchen", "Hauptstr. 85 / Rathaus", "", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "4", "500003", "35", "50.891902", "6.996591"], ["Porz", "M\u00fchlenstr. 49 Platz", "", "", "0,50 \u20ac", "Nein", "Mo-Fr 09:00 - 19:00 + Sa 09:00 - 16:00", "2", "500023", "45", "50.88294766", "7.0584476"], ["Deutz I", "Deutzer Freiheit 89", "D\u00fcppelstr.", "Neuh\u00f6ffer Str.", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 21:00", "2", "500015", "12", "50.9367979", "6.9744798"], ["Deutz I", "Deutzer Freiheit 106", "Neuh\u00f6ffer Str.", "Reischplatz", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 21:00", "2", "500015", "7", "50.9368631", "6.9762726"], ["Rodenkirchen", "Kirchstr. 2", "", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "2", "500008", "23", "50.894706", "6.993639"], ["Ehrenfeld", "Fuchsstra\u00dfe (Parkplatz)", "Venloer Str.", "Sportplatz", "0,50 \u20ac", "JA", "Mo-Sa 09:00 - 18:00", "9", "500100", "46", "50.946166", "6.928009"], ["M\u00fclheim", "Holweider Str. 124", "Carls-Werk-Str.", "Zehntstr.", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500029", "10", "50.9641817", "7.0170767"], ["Rathenauviertel", "Yitzhak-Rabin-Platz", "Engelbertstr.", "Hohenstaufenring", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "41", "50.932967", "6.938951"], ["Rodenkirchen", "Oststr. 12 Platz", "Platzfl\u00e4che", "", "0,50 \u20ac", "Nein", "Mo-Fr 09:00 - 18:00 + Sa 09:00 - 14:00", "4", "500012", "37", "50.892976", "6.997118"], ["Rodenkirchen", "Barbarastr. 47-49 Platz", "", "", "0,50 \u20ac", "Nein", "Mo-Fr 09:00 - 18:00 + Sa 09:00 - 14:00", "4", "500012", "44", "50.893417", "6.997457"], ["lrh. ohne BWP", "Frohngasse (Zoobr\u00fccke links)", "", "", "0,50 \u20ac", "JA", "Mo-So 09:00 - 18:00", "9", "500107", "156", "50.956345", "6.972462"], ["lrh. ohne BWP", "An der Flora (Zoobr\u00fccke rechts)", "", "", "0,50 \u20ac", "JA", "Mo-So 09:00 - 18:00", "9", "500107", "127", "50.957161", "6.970983"], ["Porz", "Am Marktplatz 1 (Ensen)Platz", "", "", "0,50 \u20ac", "Nein", "Mo-Fr 09:00 - 18:00 + Sa 09:00 - 14:00", "4", "500012", "63", "50.897776", "7.028526"], ["Gereonsviertel", "Kyotostr. 17", "Gereonsm\u00fchlengasse", "Klingelp\u00fctz", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "24", "50.945272", "6.948464"], ["M\u00fclheim", "Im Weidenbruch 135", "", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "1", "500037", "25", "50.981464", "7.03348"], ["M\u00fclheim", "An der Kemperwiese 4", "", "", "0,50 \u20ac", "Nein", "Mo-Mi+Fr 09:00 - 18:00; Do 14:00 - 18:00 + Sa 09:00 - 14:00", "4", "500035", "43", "50.975594", "7.074815"], ["Eigelsteinviertel", "Hansaring (Mittelinsel)", "Ritterstra\u00dfe", "Bremer Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "64", "50.948164", "6.950089"], ["Weiden-S\u00fcd", "Ostlandstra\u00dfe gg\u00fc. 26", "Tilsiter Weg", "G\u00f6ttinger Stra\u00dfe", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500022", "5", "50.935579", "6.839054"], ["Griechenmarktviertel", "Weyerstr. 100", "Weyerstr.", "Neue Weyerstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "1", "500040", "52", "50.93011735", "6.94262951"], ["Weiden-S\u00fcd", "Ostlandstra\u00dfe 30", "Tilsiter Weg", "G\u00f6ttinger Stra\u00dfe", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500022", "7", "50.935596", "6.838807"], ["S\u00fcdliche Neustadt II", "Vorgebirgstr. 39", "Loreleystr.", "Volksgartenstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "19", "50.920104", "6.950581"], ["S\u00fcdliche Neustadt II", "Vorgebirgstr. 19", "Volksgartenstr.", "Vondelstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "7", "50.921568", "6.951445"], ["S\u00fcdliche Neustadt II", "Volksgartenstr. 20 Insel", "Metzer Str.", "Vorgebirgstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "90", "50.920668", "6.951921"], ["S\u00fcdliche Neustadt II", "Volksgartenstr. 4 Insel", "Martin-Luther-Platz", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "29", "50.919917", "6.953595"], ["S\u00fcdliche Neustadt II", "Rolandstr. 95 Insel", "Merowinger Str.", "Maria-Hilf-Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "42", "50.919528", "6.954716"], ["S\u00fcdliche Neustadt II", "Rolandstr. 80 Insel", "Merowinger Str.", "Maria-Hilf-Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "51", "50.919349", "6.955553"], ["S\u00fcdliche Neustadt II", "Rolandstr. 57 Insel", "Maria-Hilf-Str.", "Zugweg", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "57", "50.918842", "6.957044"], ["S\u00fcdliche Neustadt II", "Brunostr. 17", "Elsa\u00dfstr.", "Sachsenring", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "13", "50.921823", "6.956164"], ["S\u00fcdliche Neustadt II", "Metzer Str. 5", "Elsa\u00dfstr.", "Karolingerring", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "21", "50.92165", "6.955302"], ["S\u00fcdliche Neustadt II", "Siegfriedstr. 17 Platz", "Kirchplatz", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "39", "50.917775", "6.962894"], ["S\u00fcdliche Neustadt II", "Teutoburgerstr. 12 Insel", "Bonner Str.", "Alteburger Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "92", "50.91856", "6.96153"], ["S\u00fcdliche Neustadt II", "Teutoburgerstr. 27 Insel", "Alteburger Str.", "Mainzer Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "65", "50.918965", "6.963659"], ["S\u00fcdliche Neustadt II", "Mainzerstr. 1-3 Insel", "Ubierring", "Maternusstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "35", "50.92118", "6.96377"], ["S\u00fcdliche Neustadt II", "Mainzerstr. 25 Insel", "Maternusstr.", "Teutoburger Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "81", "50.920213", "6.964253"], ["S\u00fcdliche Neustadt II", "Mainzerstr. 47 Insel", "Teutoburger Str.", "Alteburger Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "69", "50.918285", "6.96495"], ["S\u00fcdliche Neustadt II", "Mainzerstr. 69 Insel", "Teutoburger Str.", "Alteburger Str./Insel", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "69", "50.917388", "6.965097"], ["S\u00fcdliche Neustadt II", "Maternusstr. 8", "Alteburger Str.", "Mainzer Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "30", "50.920801", "6.963065"], ["S\u00fcdliche Neustadt II", "Maternusstr. 31", "Trajanstr.", "Agrippinaufer", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "30", "50.920706", "6.965284"], ["S\u00fcdliche Neustadt II", "Claudiusstr. 1 LT 6 Park", "Nordteil", "", "0,50 \u20ac", "JA", "Mo-Sa 09:00 - 23:00", "14", "500110", "63", "50.920158", "6.96515"], ["S\u00fcdliche Neustadt II", "Claudiusstr. 1 FH", "S\u00fcdteil", "", "0,50 \u20ac", "JA", "Mo-Sa 09:00 - 23:00", "14", "500110", "67", "50.919274", "6.967043"], ["S\u00fcdliche Neustadt II", "Merowingerstr. 69", "Vondelstr.", "Rolandstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "16", "50.920023", "6.954756"], ["S\u00fcdliche Neustadt II", "Merowingerstr. 37", "Elsa\u00dfstr.", "Vondelstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "9", "50.9200091", "6.9547114"], ["S\u00fcdliche Neustadt II", "Bonner Wall 6", "Ohmstr.", "Zugweg", "0,50 \u20ac", "JA", "Mo-Sa 09:00 - 18:00", "9", "500100", "14", "50.9200091", "6.9547114"], ["S\u00fcdliche Neustadt II", "Bonner Wall 17", "Ohmstr.", "Zugweg", "0,50 \u20ac", "JA", "Mo-Sa 09:00 - 18:00", "9", "500100", "24", "50.9200091", "6.9547114"], ["S\u00fcdliche Neustadt II", "Trajanstr. 39", "Ubierring", "Maternusstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "78", "50.92109237", "6.96609929"], ["S\u00fcdliche Neustadt II", "Trajanstr. 15", "Maternusstr.", "Mainzer Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "66", "50.92001784", "6.965337"], ["S\u00fcdliche Neustadt II", "Ohmstr. 32", "Bonner Wall", "Rolandstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "35", "50.9200091", "6.9547114"], ["S\u00fcdliche Neustadt II", "Ohmstr. 16", "Bonner Wall", "Rolandstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "30", "50.9200091", "6.9547114"], ["S\u00fcdliche Neustadt II", "Zugweg 42", "Bonner Wall", "Haus Nr. 44", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "10", "50.9200091", "6.9547114"], ["S\u00fcdliche Neustadt II", "Zugweg 29-31", "Bonner Wall", "Rolandstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "15", "50.918944", "6.958191"], ["S\u00fcdliche Neustadt II", "Zugweg 48", "Bucht", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "18", "50.91763", "6.95637"], ["S\u00fcdliche Neustadt II", "Rolandstr. 9 Insel", "Ohmstr.", "Bonner Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "24", "50.937531", "6.9602786"], ["S\u00fcdliche Neustadt II", "Rolandstr. 8-10 Insel", "Zugweg", "Ohmstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "45", "50.91865032", "6.95783267"], ["S\u00fcdliche Neustadt II", "Merowingerstr. 4", "Elsa\u00dfstr.", "Bonner Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "29", "50.9209323", "6.9580741"], ["S\u00fcdliche Neustadt II", "Merowingerstr. 22", "Elsa\u00dfstr.", "Vondelstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "18", "50.9206267", "6.9567364"], ["S\u00fcdliche Neustadt II", "Merowingerstr. 50", "Vondelstr.", "Rolandstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "25", "50.920036", "6.955654"], ["S\u00fcdliche Neustadt II", "Ubierring 48", "Mainzer Str.", "Trajanstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "25", "50.9216806", "6.9653243"], ["Severinsviertel", "Kart\u00e4userwall 10", "Haus Nr. 20", "Severinstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "34", "50.922173", "6.9584537"], ["Severinsviertel", "Severinstr. 82", "Kart\u00e4userhof", "Jakobstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500017", "6", "50.92562607", "6.95835229"], ["Porz", "Frankfurter Str. 182 Porz-Wahn", "gg\u00fc. Heidestr.", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "2", "500008", "19", "50.8567555", "7.0867947"], ["Severinsviertel", "Severinstr. 99", "Jakobstr.", "Josephstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500017", "9", "50.926303", "6.9580324"], ["Severinsviertel", "Severinstr. 121", "Josephstr.", "Im Dau", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500017", "15", "50.92695", "6.9577583"], ["Severinsviertel", "Severinstr. 165", "Im Dau", "An St. Katharinen", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500017", "13", "50.92695", "6.9577583"], ["Severinsviertel", "Achterstr. 52", "Landsbergstr.", "Rosenstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "47", "50.92695", "6.9577583"], ["Severinsviertel", "Achterstr. 29 Platz", "Rosenstr.", "Achterg\u00e4\u00dfchen", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "53", "50.937531", "6.9602786"], ["Severinsviertel", "Im Ferkulum 14", "Silvanstr.", "Severinswall", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "9", "50.937531", "6.9602786"], ["Severinsviertel", "Severinswall 4 Platz", "Parkplatz", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "20", "50.937531", "6.9602786"], ["Severinsviertel", "Alteburger Str. 14", "Ubierring", "Severinswall", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "52", "50.9217251", "6.9614756"], ["Severinsviertel", "Dreik\u00f6nigenstr. 40", "Bayenstr.", "Zwirnerstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "14", "50.8716712", "6.9574679"], ["Severinsviertel", "Ubierring 53", "Am Bayenturm", "An der Bottm\u00fchle", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "17", "50.8716712", "6.9574679"], ["Severinsviertel", "An der Bottm\u00fchle 6", "Ubierring", "Severinswall", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "35", "50.8716712", "6.9574679"], ["Severinsviertel", "An der Bottm\u00fchle 7", "Ubierring", "Severinswall", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "33", "50.8716712", "6.9574679"], ["Severinsviertel", "Severinskirchplatz 6", "Im Ferkulum", "Severinstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "22", "50.9231839", "6.9594955"], ["Severinsviertel", "Kart\u00e4usergasse 7", "Jakobsstr.", "Kart\u00e4userhof", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "6", "50.9231839", "6.9594955"], ["Severinsviertel", "Josephstr. 8 Platz", "Platz", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "35", "50.9231839", "6.9594955"], ["Severinsviertel", "Josephstr. 8 Parkpalette unten", "Platz", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "14", "500016", "80", "50.92616137", "6.95682205"], ["Severinsviertel", "Ulrichgasse 2", "Nebenanlage", "", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "29", "50.92462821", "6.95319761"], ["Severinsviertel", "Annostr. 78", "Dreik\u00f6nigenstr.", "Biberstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "2", "500041", "32", "50.92452", "6.95338"], ["City/Martinsviertel", "Drususgasse 9-11", "Minoritenstr.", "An der Rechtschule", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "30", "50.93967", "6.9539"], ["City/Martinsviertel", "An der Rechtschule WDR", "Mariengartengasse", "Richartzstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "14", "50.94014", "6.9543"], ["City/Martinsviertel", "An der Rechtschule Museum", "Drususgasse", "Richartzstr.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "27", "50.94024", "6.95461"], ["Weiden-S\u00fcd", "Danziger Str. gg\u00fc. 34", "Bunzlauer Str.", "Tilsitter Weg", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500022", "3", "50.9372713", "6.8407465"], ["Weiden-S\u00fcd", "Ostlandstr. 14", "Breslauer Str.", "K\u00f6nigsberger Str.", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 20:00", "4", "500022", "8", "50.93582", "6.84212"], ["N\u00f6rdlich Neumarkt", "Neven-du-Mont-Str. 5", "Kupfergasse", "Breite Str.", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "4", "500002", "19", "50.9397", "6.95056"], ["Griechenmarktviertel", "Kleiner Griechenmarkt 69", "Gro\u00dfer Griechenmarkt", "Thieboldsgasse", "1,00 \u20ac", "Nein", "Mo-Sa 09:00 - 23:00", "2", "500041", "29", "50.92452", "6.95338"], ["Porz", "Siegburger Str. 363", "", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "2", "500008", "18", "50.92452", "6.95338"], ["Porz", "Siegburger Str. 366", "", "", "0,50 \u20ac", "Nein", "Mo-Sa 09:00 - 18:00", "2", "500008", "14", "50.9115481", "6.9910828"], ["Porz", "Rathausstr. 2", "", "", "0,50 \u20ac", "Nein", "Mo-Fr 09:00 - 19:00 + Sa 09:00 - 16:00", "2", "500023", "32", "50.88588", "7.05443"]]'
+
+    var locations = JSON.parse(data);
+    var taxiData = [];
+
+    for (i = 0; i < locations.length; i++) {  
+        mark = new google.maps.LatLng(locations[i][10], locations[i][11]);
+        taxiData.push(mark)
+      }
+    function initialize() {
+      var mapOptions = {
+      zoom: 12,
+      center: new google.maps.LatLng(50.94, 6.95),
+      mapTypeId: google.maps.MapTypeId.SATELLITE
+      };
+
+      map = new google.maps.Map(document.getElementById('map-canvas'),
+        mapOptions);
+
+      var pointArray = new google.maps.MVCArray(taxiData);
+
+      heatmap = new google.maps.visualization.HeatmapLayer({
+      data: pointArray
+      });
+
+      heatmap.setMap(map);
+    }
+
+   google.maps.event.addDomListener(window, 'load', initialize);
+
+   </script>
+  </head>
+
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+
+</html>
+
