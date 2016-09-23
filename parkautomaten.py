@@ -81,7 +81,7 @@ def func3():
 
 
 @app.route("/heatmap")
-def func2():
+def func4():
     #return render_template("/maps/heatmaptestAI.html")
     return app.send_file('/maps/heatmaptestAI.html')
 
