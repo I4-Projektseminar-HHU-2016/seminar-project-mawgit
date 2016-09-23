@@ -70,19 +70,22 @@ def func1():
 
 @app.route("/automap")
 def func2():
-    #return render_template("/maps/park_staticmap.html")
+    #return render_template('/maps/park_staticmap.html')
+    #return app.send_static_file('/maps/park_staticmap.html')
     return app.send_file('/maps/park_staticmap.html')
 
 
 @app.route("/busmap")
 def func3():
-    #return render_template("/maps/bus_staticmap.html")
+    #return render_template('/maps/bus_staticmap.html')
+    #return app.send_static_file('/maps/bus_staticmap.html')
     return app.send_file('/maps/bus_staticmap.html')
 
 
 @app.route("/heatmap")
 def func4():
-    #return render_template("/maps/heatmaptestAI.html")
+    #return render_template('/maps/heatmaptestAI.html')
+    #return app.send_static_file('/maps/heatmaptestAI.html')
     return app.send_file('/maps/heatmaptestAI.html')
 
 
