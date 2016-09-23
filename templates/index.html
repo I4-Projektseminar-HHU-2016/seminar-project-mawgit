@@ -2,14 +2,18 @@
 
 
 <!--  <script src="http://maps.google.com/maps/api/js?sensor=false" 
-          type="text/javascript"></script>-->
+          type="text/javascript"></script>
+-->
+
 {% block title %}Parkautomaten Leitsystem{% endblock %}
 
 
 {% block content %}
 	<!-- visible after login -->
     <li><a href="/automap">Parkscheinautomaten static map</a></li>
-    <li><a href="/busmap">Busparkplaetze staticmap map</a></li>
-    <li><a href="/heatmap">heat map</a></li>
+    <li><a href="/busmap">Busparkplaetze static map</a></li>
+    <li><a href="/heatmap">heat map test</a></li>
+    <br><br><iframe height="620" width="820" src="/static/park_staticmap.html"></iframe><br><br>
+    <br><br>
     
 {% endblock %}

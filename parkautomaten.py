@@ -79,8 +79,8 @@ def func1():
 
 @app.route("/automap")
 def func2():
-    #return render_template('/maps/park_staticmap.html')
-    return redirect(url_for('static', filename='park_staticmap.html'))
+    return render_template('/maps/park_staticmap.html')
+    #return redirect(url_for('static', filename='park_staticmap.html'))
     #return render_template(url_for('static', filename='park_staticmap.html'))
     #return redirect('park_staticmap.html') #The requested URL was not found on the server. Even if the file is in the root...
     #return app.send_static_file('/maps/park_staticmap.html')  #The requested URL was not found on the server. Even if the file is in the root...
@@ -98,8 +98,8 @@ def func3():
 @app.route("/heatmap")
 def func4():
     return render_template('/maps/heatmap_parkautomaten.html')
-    #return app.send_static_file('/maps/heatmaptestAI.html')
-    #return app.send_file('/maps/heatmaptestAI.html')
+    #return app.send_static_file('/maps/heatmap_parkautomaten.html')
+    #return app.send_file('/maps/heatmap_parkautomaten.html')
 
 
 if __name__ == "__main__":
