@@ -48,7 +48,7 @@ COST_FACTOR = 10000
 def make_hash(password):
     """ Generate a random salt and return a new hash for the password. """
     #if isinstance(password, unicode):  #for Python2.7
-    if isinstance(password, str):  #for Python3.5
+    if isinstance(password, str):  #for Python3.x
         password = password.encode('utf-8')
     salt = b64encode(urandom(SALT_LENGTH))
     return 'PBKDF2${}${}${}${}'.format(
@@ -62,10 +62,11 @@ def make_hash(password):
 def check_hash(password, hash_):
     """ Check a password against an existing hash. """
     #if isinstance(password, unicode):  #for Python2.7
-    if isinstance(password, str):  #for Python3.5
+    if isinstance(password, str):  #for Python3.x
         password = password.encode('utf-8')
     algorithm, hash_function, cost_factor, salt, hash_a = hash_.split('$')
     assert algorithm == 'PBKDF2'
+    #hash_a = b64decode(hash_a, altchars=None, validate=False)
     hash_a = b64decode(hash_a)
     hash_b = pbkdf2_bin(password, salt, int(cost_factor), len(hash_a),
                         getattr(hashlib, hash_function))
